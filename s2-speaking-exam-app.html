@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Semester 2 Speaking Exam</title>
+  <style>
+    :root {
+      --bg: #f7f7f7;
+      --card: #ffffff;
+      --text: #111111;
+      --muted: #555555;
+      --border: #222222;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(1200px, 100%);
+      min-height: 90vh;
+      background: var(--card);
+      border: 3px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 18px;
+    }
+
+    .part-label {
+      font-size: clamp(28px, 4vw, 54px);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .timer {
+      font-size: clamp(34px, 5vw, 70px);
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      border: 3px solid var(--border);
+      border-radius: 18px;
+      padding: 10px 20px;
+      background: #fff;
+    }
+
+    .question-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .question {
+      font-size: clamp(46px, 8vw, 104px);
+      line-height: 1.12;
+      font-weight: 800;
+      max-width: 1100px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      border-top: 2px solid var(--border);
+      padding-top: 18px;
+    }
+
+    button {
+      font-size: clamp(24px, 3vw, 42px);
+      font-weight: 800;
+      padding: 22px;
+      border: 3px solid var(--border);
+      border-radius: 18px;
+      background: #eeeeee;
+      color: #000;
+      cursor: pointer;
+      min-height: 90px;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    .small-note {
+      text-align: center;
+      font-size: 18px;
+      color: var(--muted);
+      margin-top: -6px;
+    }
+
+    @media (orientation: portrait) {
+      .app { min-height: 94vh; padding: 20px; }
+      .topbar { flex-direction: column; align-items: stretch; text-align: center; }
+      .timer { align-self: center; }
+      .question { font-size: clamp(42px, 9vw, 90px); }
+      .buttons { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="topbar">
+      <div class="part-label" id="partLabel">Part A</div>
+      <div class="timer" id="timer">00:00</div>
+    </section>
+
+    <section class="question-area">
+      <div class="question" id="questionText"></div>
+    </section>
+
+    <section class="buttons">
+      <button id="nextBtn">Next Part A Question</button>
+      <button id="moveBtn">Go to Part B</button>
+    </section>
+
+    <div class="small-note">Tap the left button for another random question. Tap the right button to move to the next part.</div>
+  </main>
+
+  <script>
+    const questions = {
+      A: [
+        "What makes a good student?",
+        "What are the benefits of learning another language?",
+        "What is the most important thing you have learned at university?",
+        "What advice would you give to new students at this university?",
+        "What skills are important for your future job?",
+        "Why is teamwork important?",
+        "What makes a good leader?",
+        "What technology do you use every day?",
+        "What is your favorite way to learn new things?",
+        "How do you make friends and keep good relationships?",
+        "What do you enjoy most about your major?",
+        "What is something you would like to improve about yourself?",
+        "What is the best way to stay healthy?",
+        "What do you think makes a person successful?",
+        "What is one important skill for the future?"
+      ],
+      B: [
+        "Talk about a special experience you remember.",
+        "Talk about a time when you worked in a team.",
+        "Talk about a time when you were a leader.",
+        "Talk about a time when you helped someone.",
+        "Talk about a time when someone helped you.",
+        "Talk about a time when you learned a new skill.",
+        "Talk about a time when you finished a difficult project.",
+        "Talk about a time when you solved a problem.",
+        "Talk about a time when you tried something new.",
+        "Talk about a time when you worked with a difficult person.",
+        "Talk about a difficult experience and what you learned from it.",
+        "Talk about a successful project you completed.",
+        "Talk about a time when you made a mistake.",
+        "Talk about a time when you had to communicate with someone different from you.",
+        "Talk about a time when you felt proud of yourself.",
+        "Talk about a time when you visited a new place.",
+        "Talk about a time when you improved something.",
+        "Talk about a time when you had to make an important decision.",
+        "Talk about a time when you learned from another person.",
+        "Talk about a time when you achieved a goal."
+      ],
+      C: [
+        "What specific plans do you have for the future?",
+        "What job would you like to have after graduation?",
+        "How will you use the knowledge from your major in the future?",
+        "How will technology help you in the future?",
+        "What skills do you want to learn in the future?",
+        "Where would you like to live in the future? Why?",
+        "How will you stay healthy in the future?",
+        "What goals do you want to achieve in the next five years?",
+        "What problems do you think you may face in the future?",
+        "How will you solve problems in the future?",
+        "How will you continue learning after university?",
+        "What new technology would you like to use in the future?",
+        "How do you think your life will change in the future?",
+        "What would you like to improve about yourself in the future?",
+        "If you move to a new place, how will you adapt?",
+        "How will you make money in the future?",
+        "What is something exciting you hope to do in the future?",
+        "What kind of lifestyle would you like to have in the future?",
+        "How will you use English in the future?",
+        "What is your biggest dream for the future?"
+      ]
+    };
+
+    const partLabel = document.getElementById("partLabel");
+    const questionText = document.getElementById("questionText");
+    const nextBtn = document.getElementById("nextBtn");
+    const moveBtn = document.getElementById("moveBtn");
+    const timer = document.getElementById("timer");
+
+    let currentPart = "A";
+    let lastQuestion = { A: null, B: null, C: null };
+    let startTime = Date.now();
+    let timerInterval = null;
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      return `${minutes}:${seconds}`;
+    }
+
+    function startTimer(reset = false) {
+      if (reset) {
+        startTime = Date.now();
+        timer.textContent = "00:00";
+      }
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timer.textContent = formatTime(Date.now() - startTime);
+      }, 250);
+    }
+
+    function randomQuestion(part) {
+      const list = questions[part];
+      let index = Math.floor(Math.random() * list.length);
+      if (list.length > 1) {
+        while (index === lastQuestion[part]) {
+          index = Math.floor(Math.random() * list.length);
+        }
+      }
+      lastQuestion[part] = index;
+      questionText.textContent = list[index];
+    }
+
+    function updateScreen() {
+      partLabel.textContent = `Part ${currentPart}`;
+      nextBtn.textContent = `Next Part ${currentPart} Question`;
+
+      if (currentPart === "A") moveBtn.textContent = "Go to Part B";
+      if (currentPart === "B") moveBtn.textContent = "Go to Part C";
+      if (currentPart === "C") moveBtn.textContent = "Finish / New Student";
+
+      randomQuestion(currentPart);
+    }
+
+    nextBtn.addEventListener("click", () => {
+      randomQuestion(currentPart);
+    });
+
+    moveBtn.addEventListener("click", () => {
+      if (currentPart === "A") {
+        currentPart = "B";
+        updateScreen();
+        return;
+      }
+      if (currentPart === "B") {
+        currentPart = "C";
+        updateScreen();
+        return;
+      }
+      if (currentPart === "C") {
+        currentPart = "A";
+        startTimer(true);
+        updateScreen();
+      }
+    });
+
+    // Start the exam immediately on Part A.
+    startTimer(true);
+    updateScreen();
+  </script>
+</body>
+</html>
